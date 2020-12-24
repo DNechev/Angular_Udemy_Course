@@ -1,6 +1,7 @@
 export class AuthService{
     loggedIn = false;
 
+    // tslint:disable: typedef
     isAuthenticated(){
         const promise = new Promise(
             (resolve, reject) => {
