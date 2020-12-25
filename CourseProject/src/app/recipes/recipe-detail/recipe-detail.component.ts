@@ -14,7 +14,7 @@ export class RecipeDetailComponent implements OnInit {
   id: number;
 
   constructor(private slService: ShoppingListService, private route: ActivatedRoute,
-    private recipeService: RecipeService, private router: Router) { }
+              private recipeService: RecipeService, private router: Router) { }
 
   ngOnInit(): void {
     this.route.params.subscribe( (params: Params) => {
@@ -28,7 +28,7 @@ export class RecipeDetailComponent implements OnInit {
       this.slService.addIngredientsFromRecipe(this.detailedRecipe.ingredients);
   }
 
-  onRecipeEdit(){
+  onRecipeEdit(): void{
     this.router.navigate(['recipe-edit'], {relativeTo: this.route });
   }
 }

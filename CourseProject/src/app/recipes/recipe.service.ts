@@ -1,9 +1,7 @@
 import { Recipe } from './recipe.model';
-import { EventEmitter } from '@angular/core';
 import { Ingredient } from '../Shared/ingredient.model';
 
 export class RecipeService{
-    recipeSelected = new EventEmitter<Recipe>();
     private pbjIngredients: Ingredient[] = [
          {name: 'slices of bread', amount: 2},
          {name: 'grams of peanut butter', amount: 25 },
@@ -22,11 +20,11 @@ export class RecipeService{
         this.pbjIngredients)
       ];
 
-    getRecipes() {
+    getRecipes(): Recipe[] {
         return this.recipes.slice();
     }
 
-    getRecipeById(id: number) {
+    getRecipeById(id: number): Recipe {
       return this.recipes.find((recipe: Recipe) => recipe.id === id);
     }
 }
