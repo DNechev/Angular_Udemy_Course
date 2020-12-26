@@ -2,26 +2,28 @@
   <div class="row">
     <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
       <form [formGroup]="singUpForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            class="form-control"
-            formControlName="username">
-            <span class="helper-block" *ngIf="singUpForm.get('username').invalid && singUpForm.get('username').touched"
-            >Please enter a valid username!</span>
-        </div>
-        <div class="form-group">
-          <label for="email">email</label>
-          <input
-            type="text"
-            id="email"
-            class="form-control"
-            formControlName="email">
-            <span class="helper-block" *ngIf="singUpForm.get('email').invalid && singUpForm.get('email').touched"
-            >Please enter a valid email!</span>
-        </div>
+        <dir formGroupName="userDataFormGroup">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              class="form-control"
+              formControlName="username">
+              <span class="helper-block" *ngIf="singUpForm.get('userDataFormGroup.username').invalid && singUpForm.get('userDataFormGroup.username').touched"
+              >Please enter a valid username!</span>
+          </div>
+          <div class="form-group">
+            <label for="email">email</label>
+            <input
+              type="text"
+              id="email"
+              class="form-control"
+              formControlName="email">
+              <span class="helper-block" *ngIf="singUpForm.get('userDataFormGroup.email').invalid && singUpForm.get('userDataFormGroup.email').touched"
+              >Please enter a valid email!</span>
+          </div>
+        </dir>
         <div class="radio" *ngFor="let gender of genders">
           <label>
             <input
@@ -30,7 +32,7 @@
               [value]="gender">{{ gender }}
           </label>
         </div>
-        <button class="btn btn-primary" type="submit">Submit</button>
+        <button class="btn btn-primary" type="submit" [disabled]="singUpForm.invalid">Submit</button>
       </form>
     </div>
   </div>
