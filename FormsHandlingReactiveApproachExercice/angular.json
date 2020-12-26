@@ -24,7 +24,7 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules\\bootstrap\\dist\\css\\bootstrap.css.min",
+              "node_modules\\bootstrap\\dist\\css\\bootstrap.min.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -121,5 +121,8 @@
       }
     }
   },
-  "defaultProject": "FormsHandlingReactiveApproachExercice"
+  "defaultProject": "FormsHandlingReactiveApproachExercice",
+  "cli": {
+    "analytics": false
+  }
 }
