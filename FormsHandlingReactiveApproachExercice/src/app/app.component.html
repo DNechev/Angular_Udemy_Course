@@ -14,6 +14,41 @@
 
           Upon submitting the form, simply print the value to the console
       -->
+      <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="projectName">Project name</label>
+          <input type="text"
+          class="form-control"
+          formControlName="projectName">
+          <span *ngIf="projectForm.get('projectName').invalid && projectForm.get('projectName').touched" class="helper-block">Project name is invalid!
+            <span *ngIf="projectForm.get('projectName').errors['required']" class="helper-block">Project name is required!</span>
+            <span *ngIf="projectForm.get('projectName').errors['Project name is invalid']" class="helper-block">"Test" is invalid!</span>
+          </span>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="text"
+          class="form-control"
+          formControlName="email">
+          <span *ngIf="projectForm.get('email').invalid && projectForm.get('email').touched" class="helper-block">Email is invalid!
+            <span *ngIf="projectForm.get('email').errors['required']" class="helper-block">Email is required!</span>
+            <span *ngIf="projectForm.get('email').errors['email']" class="helper-block">{{projectForm.get('email').value}} is invalid!</span>
+          </span>
+        </div>
+        <div class="form-group">
+          <label for="projectStatus">Project status</label>
+          <select name="projectStatus" class="form-control" formControlName="projectStatus">
+            <option value="stable">Stable</option>
+            <option value="critical">Critical</option>
+            <option value="finished">Finished</option>
+          </select>
+        </div>
+        <button [disabled]="projectForm.invalid" class="btn btn-primary" type="submit">Submit</button>
+      </form>
+      <hr>
+      <p>Project name is: {{ projectName }}</p>
+      <p>Email is: {{ email }}</p>
+      <p>Project status is: {{ projectStatus }}</p>
     </div>
   </div>
 </div>
