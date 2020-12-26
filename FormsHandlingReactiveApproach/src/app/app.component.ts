@@ -29,6 +29,22 @@ export class AppComponent implements OnInit{
     this.singUpForm.statusChanges.subscribe( (value) => {
       console.log(value);
     });
+
+    // this.singUpForm.setValue({
+    //   'userDataFormGroup': {
+    //     'username': 'TestName',
+    //     'email': 'TestMail@TestMail.com'
+    //   },
+    //   'gender': 'male',
+    //   'hobbies': []
+    // });
+
+    this.singUpForm.patchValue({
+      'userDataFormGroup': {
+        'username': 'TestName',
+        'email': 'TestMail@TestMail.com'
+      }
+    });
   }
 
   getControls() {
@@ -37,6 +53,7 @@ export class AppComponent implements OnInit{
 
   onSubmit() {
     console.log(this.singUpForm);
+    this.singUpForm.reset();
   }
 
   onAddHobby() {
