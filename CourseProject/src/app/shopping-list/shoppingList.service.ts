@@ -28,4 +28,15 @@ export class ShoppingListService{
     getIngredient(index: number): Ingredient {
       return this.ingredients[index];
     }
+
+    editIngredient(index: number, newName: string, newAmount: number): void {
+      this.ingredients[index].name = newName;
+      this.ingredients[index].amount = newAmount;
+      this.ingredientsChanged.next(this.ingredients.slice());
+    }
+
+    deleteIngredient(index: number) {
+      this.ingredients.splice(index, 1);
+      this.ingredientsChanged.next(this.ingredients.slice());
+    }
 }
