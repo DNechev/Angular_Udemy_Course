@@ -1,4 +1,3 @@
-import { Route } from '@angular/compiler/src/core';
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -88,8 +87,7 @@ export class RecipeEditComponent implements OnInit {
   }
 
   onRemoveIngredient(index: number): void {
-    (this.recipeForm.get('ingredients') as FormArray).controls.splice(index, 1);
-    console.log( (this.recipeForm.get('ingredients') as FormArray).controls);
+    (this.recipeForm.get('ingredients') as FormArray).removeAt(index);
   }
 
   onCancel(): void {
