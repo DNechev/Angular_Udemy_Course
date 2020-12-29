@@ -11,6 +11,7 @@ import { PostModel } from './post.model';
 export class AppComponent implements OnInit {
   loadedPosts = [];
   private postRequestsUrl = 'https://angular-course-project-10d0c-default-rtdb.firebaseio.com/posts.json';
+  isFetching = false;
 
   constructor(private http: HttpClient) {}
 
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit {
 
   onFetchPosts() {
     // Send Http request
+    this.isFetching = true;
     this.fetchPosts();
   }
 
@@ -45,7 +47,8 @@ export class AppComponent implements OnInit {
       return postsArray;
     }))
     .subscribe( responseData => {
-      console.log(responseData);
+      this.isFetching = false;
+      this.loadedPosts = responseData;
     });
   }
 }
