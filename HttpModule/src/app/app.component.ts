@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
 import { PostModel } from './post.model';
+import { PostService } from './post.service';
 
 @Component({
   selector: 'app-root',
@@ -10,43 +9,31 @@ import { PostModel } from './post.model';
 })
 export class AppComponent implements OnInit {
   loadedPosts = [];
-  private postRequestsUrl = 'https://angular-course-project-10d0c-default-rtdb.firebaseio.com/posts.json';
   isFetching = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private postService: PostService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.subscribeToFetchPostsObservable();
+  }
 
   onCreatePost(postData: PostModel) {
     // Send Http request
-    this.http.post(this.postRequestsUrl, postData).subscribe( responseData => {
-      console.log(responseData);
-    });
+    this.postService.createAndStorePost(postData.title, postData.content);
   }
 
   onFetchPosts() {
     // Send Http request
-    this.isFetching = true;
-    this.fetchPosts();
+    this.subscribeToFetchPostsObservable();
   }
 
   onClearPosts() {
     // Send Http request
   }
 
-  private fetchPosts() {
-    this.http.get<{[key: string]: PostModel}>(this.postRequestsUrl)
-    .pipe(map( (responseData) => {
-      const postsArray: PostModel[] = [];
-      for (const key in responseData) {
-        if (responseData.hasOwnProperty(key)) {
-          postsArray.push({...responseData[key], id: key});
-        }
-      }
-      console.log(postsArray);
-      return postsArray;
-    }))
-    .subscribe( responseData => {
+  private subscribeToFetchPostsObservable() {
+    this.isFetching = true;
+    this.postService.fetchPosts().subscribe( responseData => {
       this.isFetching = false;
       this.loadedPosts = responseData;
     });
