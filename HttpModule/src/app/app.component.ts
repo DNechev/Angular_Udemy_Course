@@ -59,4 +59,8 @@ export class AppComponent implements OnInit, OnDestroy {
       this.error = 'Error status: ' + error['status'] + ', ' + 'Error message: ' + error['statusText'];
     });
   }
+
+  onErrorNoticedByUser() {
+    this.error = null;
+  }
 }
