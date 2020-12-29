@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { PostModel } from './post.model';
 import { PostService } from './post.service';
 
@@ -7,20 +9,30 @@ import { PostService } from './post.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   loadedPosts = [];
   isFetching = false;
   error = null;
+  @ViewChild('postForm') form: NgForm;
+  private errorSub: Subscription;
 
   constructor(private postService: PostService) {}
 
   ngOnInit() {
     this.subscribeToFetchPostsObservable();
+    this.errorSub = this.postService.error.subscribe( (error) => {
+      this.error = error;
+    });
+  }
+
+  ngOnDestroy() {
+    this.errorSub.unsubscribe();
   }
 
   onCreatePost(postData: PostModel) {
     // Send Http request
     this.postService.createAndStorePost(postData.title, postData.content);
+    this.form.reset();
   }
 
   onFetchPosts() {
