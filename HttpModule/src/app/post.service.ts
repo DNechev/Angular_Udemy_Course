@@ -50,7 +50,7 @@ export class PostService {
   clearPosts(): any {
     return this.http.delete(this.postRequestsUrl, {
       observe: 'events',
-      responseType: 'text'
+      responseType: 'json'
     }).pipe(tap( event => {
       console.log(event);
       if (event.type === HttpEventType.Response) {
