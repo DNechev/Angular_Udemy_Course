@@ -10,6 +10,7 @@ import { PostService } from './post.service';
 export class AppComponent implements OnInit {
   loadedPosts = [];
   isFetching = false;
+  error = null;
 
   constructor(private postService: PostService) {}
 
@@ -39,6 +40,11 @@ export class AppComponent implements OnInit {
     this.postService.fetchPosts().subscribe( responseData => {
       this.isFetching = false;
       this.loadedPosts = responseData;
+    }, error => {
+      console.log(error);
+      this.loadedPosts = [];
+      this.isFetching = false;
+      this.error = 'Error status: ' + error['status'] + ', ' + 'Error message: ' + error['statusText'];
     });
   }
 }
