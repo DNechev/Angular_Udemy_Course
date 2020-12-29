@@ -1,28 +1,32 @@
-import { Injectable } from "@angular/core";
-import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import { PostModel } from './post.model';
-import { Subject, throwError } from "rxjs";
+import { Subject, throwError } from 'rxjs';
 
-@Injectable({providedIn: "root"})
+@Injectable({providedIn: 'root'})
 export class PostService {
   private postRequestsUrl = 'https://angular-course-project-10d0c-default-rtdb.firebaseio.com/posts.json';
   error = new Subject<string>();
 
   constructor(private http: HttpClient) {}
 
-  createAndStorePost(title: string, content: string) {
-    const postData: PostModel = {title: title, content: content};
+  createAndStorePost(title: string, content: string): void {
+    const postData: PostModel = {title, content};
 
     this.http.post(this.postRequestsUrl, postData).subscribe( responseData => {
       console.log(responseData);
     }, error => {
-      this.error.next('Error status: ' + error['status'] + ', ' + 'Error message: ' + error['statusText']);
+      this.error.next('Error status: ' + error.status + ', ' + 'Error message: ' + error.statusText);
     });
   }
 
-  fetchPosts() {
-    return this.http.get<{[key: string]: PostModel}>(this.postRequestsUrl)
+  fetchPosts(): any {
+    return this.http.get<{[key: string]: PostModel}>(this.postRequestsUrl, {
+      headers: new HttpHeaders({
+        CustomHeader: 'Hello'
+      })
+    })
     .pipe(
       map( (responseData) => {
       const postsArray: PostModel[] = [];
@@ -40,7 +44,7 @@ export class PostService {
     );
   }
 
-  clearPosts() {
+  clearPosts(): any {
     return this.http.delete(this.postRequestsUrl);
   }
 }

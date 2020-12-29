@@ -18,36 +18,36 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(private postService: PostService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.subscribeToFetchPostsObservable();
     this.errorSub = this.postService.error.subscribe( (error) => {
       this.error = error;
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.errorSub.unsubscribe();
   }
 
-  onCreatePost(postData: PostModel) {
+  onCreatePost(postData: PostModel): void {
     // Send Http request
     this.postService.createAndStorePost(postData.title, postData.content);
     this.form.reset();
   }
 
-  onFetchPosts() {
+  onFetchPosts(): void {
     // Send Http request
     this.subscribeToFetchPostsObservable();
   }
 
-  onClearPosts() {
+  onClearPosts(): void {
     // Send Http request
     this.postService.clearPosts().subscribe( () => {
       this.loadedPosts = [];
     });
   }
 
-  private subscribeToFetchPostsObservable() {
+  private subscribeToFetchPostsObservable(): any {
     this.isFetching = true;
     this.postService.fetchPosts().subscribe( responseData => {
       this.isFetching = false;
@@ -56,11 +56,11 @@ export class AppComponent implements OnInit, OnDestroy {
       console.log(error);
       this.loadedPosts = [];
       this.isFetching = false;
-      this.error = 'Error status: ' + error['status'] + ', ' + 'Error message: ' + error['statusText'];
+      this.error = 'Error status: ' + error.status + ', ' + 'Error message: ' + error.statusText;
     });
   }
 
-  onErrorNoticedByUser() {
+  onErrorNoticedByUser(): void {
     this.error = null;
   }
 }
