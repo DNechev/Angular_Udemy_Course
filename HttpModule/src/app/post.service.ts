@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { map, catchError } from 'rxjs/operators';
+import { HttpClient, HttpEventType, HttpHeaders, HttpParams } from '@angular/common/http';
+import { map, catchError, tap } from 'rxjs/operators';
 import { PostModel } from './post.model';
 import { Subject, throwError } from 'rxjs';
 
@@ -14,7 +14,9 @@ export class PostService {
   createAndStorePost(title: string, content: string): void {
     const postData: PostModel = {title, content};
 
-    this.http.post(this.postRequestsUrl, postData).subscribe( responseData => {
+    this.http.post(this.postRequestsUrl, postData, {
+      observe: 'response'
+    }).subscribe( responseData => {
       console.log(responseData);
     }, error => {
       this.error.next('Error status: ' + error.status + ', ' + 'Error message: ' + error.statusText);
@@ -46,6 +48,13 @@ export class PostService {
   }
 
   clearPosts(): any {
-    return this.http.delete(this.postRequestsUrl);
+    return this.http.delete(this.postRequestsUrl, {
+      observe: 'events'
+    }).pipe(tap( event => {
+      console.log(event);
+      if (event.type === HttpEventType.Response) {
+        console.log(event.body);
+      }
+    }));
   }
 }
