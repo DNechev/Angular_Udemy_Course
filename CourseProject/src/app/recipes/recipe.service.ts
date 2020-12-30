@@ -16,12 +16,7 @@ export class RecipeService{
         {name: 'tomato', amount: 1}
     ];
 
-    private recipes: Recipe[] = [
-        new Recipe('Burger', 'Some random burger on the internet',
-        'https://img2.mashed.com/img/gallery/food-trends-that-are-about-to-take-over-2020/intro-1575330865.jpg', this.burgerIngredients),
-        new Recipe('PBnJ', 'love <3', 'https://media2.s-nbcnews.com/i/newscms/2017_17/1210676/pbj-today-170427-tease_8f65d87fb736fbe341a38835005668a0.jpg',
-        this.pbjIngredients)
-      ];
+    private recipes: Recipe[] = [];
 
     getRecipes(): Recipe[] {
         return this.recipes.slice();
@@ -43,6 +38,11 @@ export class RecipeService{
 
     deleteRecipeById(index: number) {
       this.recipes.splice(index, 1);
+      this.recipesChnaged.next(this.recipes.slice());
+    }
+
+    setRecipes(recipes: Recipe[]) {
+      this.recipes = recipes;
       this.recipesChnaged.next(this.recipes.slice());
     }
 }
