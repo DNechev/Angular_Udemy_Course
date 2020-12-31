@@ -9,6 +9,8 @@ import { AuthService } from './auth.service';
 })
 export class AuthComponent {
   isLogInMode = true;
+  isLoading = false;
+  error: string;
   authForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)])
@@ -29,9 +31,20 @@ export class AuthComponent {
     const mail = this.authForm.controls.email.value;
     const pass = this.authForm.controls.password.value;
 
-    this.authService.signUp(mail, pass).subscribe( (response) => {
-      console.log(response);
-    });
+    this.isLoading = true;
+
+    if (!this.isLogInMode) {
+      this.authService.signUp(mail, pass).subscribe(response => {
+        console.log(response);
+        this.isLoading = false;
+      }, error => {
+        this.isLoading = false;
+        this.error = error;
+      });
+    } else {
+
+    }
+
     this.authForm.reset();
   }
 }
