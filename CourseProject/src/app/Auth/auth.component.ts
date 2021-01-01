@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { AuthResponseData, AuthService } from './auth.service';
@@ -8,7 +8,7 @@ import { AuthResponseData, AuthService } from './auth.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent {
+export class AuthComponent implements OnInit {
   isLogInMode = true;
   isLoading = false;
   error: string;
@@ -18,6 +18,12 @@ export class AuthComponent {
   });
 
   constructor(private authService: AuthService){}
+
+  ngOnInit(): void {
+    this.authService.userSubject.subscribe( user => {
+      console.log(user);
+    });
+  }
 
   onSwitchMode(): void {
     this.isLogInMode = !this.isLogInMode;
@@ -43,7 +49,6 @@ export class AuthComponent {
     }
 
     authObservable.subscribe(response => {
-      console.log(response);
       this.isLoading = false;
     }, error => {
       this.isLoading = false;

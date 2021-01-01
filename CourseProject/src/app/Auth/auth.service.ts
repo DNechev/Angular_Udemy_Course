@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError } from 'rxjs/operators';
-import { throwError} from 'rxjs';
+import { Subject, throwError } from 'rxjs';
+import { UserModel } from './user.model';
+import { tap } from 'rxjs/operators';
 
 export interface AuthResponseData{
   kind: string;
@@ -17,6 +19,7 @@ export interface AuthResponseData{
 export class AuthService {
   signUpUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAZxkZXVHuygRehxmg6Z2a7c_6PVT173sU';
   signInUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAZxkZXVHuygRehxmg6Z2a7c_6PVT173sU';
+  userSubject: Subject<UserModel> = new Subject<UserModel>();
 
   constructor(private http: HttpClient){}
 
@@ -25,7 +28,9 @@ export class AuthService {
       email: email,
       password: password,
       returnSecureToken: true
-    }).pipe(catchError(this.handleError));
+    }).pipe(catchError(this.handleError), tap<AuthResponseData>( rData => {
+      this.handleAuthentication(rData.email, rData.localId, rData.idToken, +rData.expiresIn);
+    }));
   }
 
   signUp(email: string, password: string): any {
@@ -33,7 +38,15 @@ export class AuthService {
       email: email,
       password: password,
       returnSecureToken: true
-    }).pipe(catchError(this.handleError));
+    }).pipe(catchError(this.handleError), tap<AuthResponseData>( rData => {
+      this.handleAuthentication(rData.email, rData.localId, rData.idToken, +rData.expiresIn);
+    }));
+  }
+
+  private handleAuthentication(email: string, localId: string, idToken: string, expDate: number) {
+    const date = new Date(new Date().getTime() + (expDate * 1000));
+    const user = new UserModel(email, localId, idToken, date);
+    this.userSubject.next(user);
   }
 
   private handleError(error): any {
