@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthResponseData, AuthService } from './auth.service';
 
@@ -17,7 +18,7 @@ export class AuthComponent implements OnInit {
     password: new FormControl('', [Validators.required, Validators.minLength(6)])
   });
 
-  constructor(private authService: AuthService){}
+  constructor(private authService: AuthService, private router: Router){}
 
   ngOnInit(): void {
     this.authService.userSubject.subscribe( user => {
@@ -50,6 +51,7 @@ export class AuthComponent implements OnInit {
 
     authObservable.subscribe(response => {
       this.isLoading = false;
+      this.router.navigate(['/recipes']);
     }, error => {
       this.isLoading = false;
       this.error = error;
