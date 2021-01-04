@@ -1,12 +1,13 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { RecipeService } from '../recipes/recipe.service';
 import { Recipe } from '../recipes/recipe.model';
-import { map, tap } from 'rxjs/operators';
+import { exhaustMap, map, take, tap } from 'rxjs/operators';
+import { AuthService } from '../Auth/auth.service';
 
 @Injectable({providedIn: 'root'})
 export class DataStorageService {
-  constructor(private http: HttpClient, private recipesService: RecipeService) {
+  constructor(private http: HttpClient, private recipesService: RecipeService, private authService: AuthService) {
   }
 
   storeRecipes(): void {
@@ -18,9 +19,11 @@ export class DataStorageService {
   }
 
   fetchRecipes(): any {
-    const recipes: Recipe[] = this.recipesService.getRecipes();
-    return this.http.get<Recipe[]>('https://angular-udemy-recipes-project-default-rtdb.firebaseio.com/recipes.json')
-    .pipe(map( recipes => {
+    return this.authService.userSubject.pipe(take(1), exhaustMap(user => {
+      console.log(user.token);
+      return this.http.get<Recipe[]>('https://angular-udemy-recipes-project-default-rtdb.firebaseio.com/recipes.json',
+      { params: new HttpParams().set('auth', user.token)});
+    }), map( recipes => {
       return recipes.map(recipe => {
         return {...recipe, ingredients: recipe.ingredients ? recipe.ingredients : []};
       });

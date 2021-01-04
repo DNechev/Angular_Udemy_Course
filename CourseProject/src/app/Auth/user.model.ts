@@ -5,7 +5,8 @@ export class UserModel{
     private _tokenExpirationDate) {}
 
     get token() {
-      if(this._tokenExpirationDate || new Date() > this._tokenExpirationDate) {
+      if (!this._tokenExpirationDate || new Date() > this._tokenExpirationDate) {
+        console.log(this._tokenExpirationDate)
         return null;
       }
       return this._token;
