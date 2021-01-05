@@ -26,6 +26,10 @@ export class AuthComponent implements OnInit {
     });
   }
 
+  onClosedAlert(): void {
+    this.error = null;
+  }
+
   onSwitchMode(): void {
     this.isLogInMode = !this.isLogInMode;
     this.authForm.reset();
