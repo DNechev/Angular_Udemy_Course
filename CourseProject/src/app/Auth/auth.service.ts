@@ -4,6 +4,7 @@ import { catchError } from 'rxjs/operators';
 import { BehaviorSubject, throwError } from 'rxjs';
 import { UserModel } from './user.model';
 import { tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 export interface AuthResponseData{
   kind: string;
@@ -21,7 +22,7 @@ export class AuthService {
   signInUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAZxkZXVHuygRehxmg6Z2a7c_6PVT173sU';
   userSubject = new BehaviorSubject<UserModel>(null);
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient, private router: Router){}
 
   signIn(email: string, password: string): any {
     return this.http.post<AuthResponseData>(this.signInUrl, {
@@ -41,6 +42,11 @@ export class AuthService {
     }).pipe(catchError(this.handleError), tap<AuthResponseData>( rData => {
       this.handleAuthentication(rData.email, rData.localId, rData.idToken, +rData.expiresIn);
     }));
+  }
+
+  logOut(): void {
+    this.userSubject.next(null);
+    this.router.navigate(['auth']);
   }
 
   private handleAuthentication(email: string, localId: string, idToken: string, expDate: number) {
