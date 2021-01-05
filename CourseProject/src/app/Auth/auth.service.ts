@@ -21,6 +21,7 @@ export class AuthService {
   signUpUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAZxkZXVHuygRehxmg6Z2a7c_6PVT173sU';
   signInUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAZxkZXVHuygRehxmg6Z2a7c_6PVT173sU';
   userSubject = new BehaviorSubject<UserModel>(null);
+  private tokenExpTimer: any;
 
   constructor(private http: HttpClient, private router: Router){}
 
@@ -47,6 +48,17 @@ export class AuthService {
   logOut(): void {
     this.userSubject.next(null);
     this.router.navigate(['auth']);
+    localStorage.removeItem('userData');
+    if (this.tokenExpTimer) {
+      clearTimeout(this.tokenExpTimer);
+    }
+    this.tokenExpTimer = null;
+  }
+
+  autoLogout(expirationDuration: number): void {
+    this.tokenExpTimer = setTimeout(() => {
+      this.logOut();
+    }, expirationDuration);
   }
 
   autoLogIn(): void {
@@ -64,6 +76,8 @@ export class AuthService {
     const user = new UserModel(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
 
     if (user.token) {
+      const expiration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+      this.autoLogout(expiration);
       this.userSubject.next(user);
     }
   }
@@ -72,6 +86,7 @@ export class AuthService {
     const date = new Date(new Date().getTime() + (expDate * 1000));
     const user = new UserModel(email, localId, idToken, date);
     this.userSubject.next(user);
+    this.autoLogout(expDate * 1000);
     localStorage.setItem('userData', JSON.stringify(user));
   }
 
