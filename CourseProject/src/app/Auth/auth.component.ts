@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ComponentFactoryResolver, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { AlertComponent } from '../Shared/alert/alert.component';
 import { AuthResponseData, AuthService } from './auth.service';
 
 @Component({
@@ -18,7 +19,7 @@ export class AuthComponent implements OnInit {
     password: new FormControl('', [Validators.required, Validators.minLength(6)])
   });
 
-  constructor(private authService: AuthService, private router: Router){}
+  constructor(private authService: AuthService, private router: Router, private cmpFactoryResolver: ComponentFactoryResolver){}
 
   ngOnInit(): void {
     this.authService.userSubject.subscribe( user => {
@@ -58,9 +59,15 @@ export class AuthComponent implements OnInit {
       this.router.navigate(['/recipes']);
     }, error => {
       this.isLoading = false;
-      this.error = error;
+      // this.error = error;
+      this.showErrorAlert(error);
     });
 
     this.authForm.reset();
+  }
+
+  showErrorAlert(error: string) {
+    const alertCmpFactory = this.cmpFactoryResolver.resolveComponentFactory(AlertComponent);
+
   }
 }
