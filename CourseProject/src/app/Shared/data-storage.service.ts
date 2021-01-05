@@ -21,8 +21,7 @@ export class DataStorageService {
   fetchRecipes(): any {
     return this.authService.userSubject.pipe(take(1), exhaustMap(user => {
       console.log(user.token);
-      return this.http.get<Recipe[]>('https://angular-udemy-recipes-project-default-rtdb.firebaseio.com/recipes.json',
-      { params: new HttpParams().set('auth', user.token)});
+      return this.http.get<Recipe[]>('https://angular-udemy-recipes-project-default-rtdb.firebaseio.com/recipes.json');
     }), map( recipes => {
       return recipes.map(recipe => {
         return {...recipe, ingredients: recipe.ingredients ? recipe.ingredients : []};
