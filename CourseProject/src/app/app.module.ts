@@ -22,7 +22,7 @@ import { CoreModule } from './core.module';
     HttpClientModule,
     CoreModule,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {
 }
