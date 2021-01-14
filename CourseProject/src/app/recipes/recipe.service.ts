@@ -1,7 +1,12 @@
 import { Recipe } from './recipe.model';
 import { Ingredient } from '../Shared/ingredient.model';
 import { Subject } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AddIngredients } from '../shopping-list/store/shopping-list.actions';
+import { Injectable } from '@angular/core';
+import * as fromApp from '../store/app.reducer';
 
+@Injectable()
 export class RecipeService{
   recipesChnaged = new Subject<Recipe[]>();
 
@@ -17,6 +22,16 @@ export class RecipeService{
     ];
 
     private recipes: Recipe[] = [];
+
+    constructor(private store: Store<fromApp.AppState>){
+    }
+
+    addIngredientsFromRecipe(ingredients: Ingredient[]): void {
+      this.store.dispatch(new AddIngredients(ingredients));
+      // this.ingredients = this.ingredients.concat(ingredients);
+      // console.log(this.ingredients);
+      // this.ingredientsChanged.next(this.ingredients.slice());
+  }
 
     getRecipes(): Recipe[] {
         return this.recipes.slice();
