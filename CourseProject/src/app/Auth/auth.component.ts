@@ -1,10 +1,13 @@
 import { Component, ComponentFactoryResolver, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { AlertComponent } from '../Shared/alert/alert.component';
 import { PlaceholderDirective } from '../Shared/placeholder/placeholder.directive';
 import { AuthResponseData, AuthService } from './auth.service';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from '../Auth/store/auth.actions';
 
 @Component({
   selector: 'app-auth',
@@ -22,12 +25,20 @@ export class AuthComponent implements OnInit, OnDestroy {
   @ViewChild(PlaceholderDirective) alertHost: PlaceholderDirective;
   private closeSub: Subscription;
 
-  constructor(private authService: AuthService, private router: Router, private cmpFactoryResolver: ComponentFactoryResolver){}
+  constructor(private authService: AuthService, private router: Router,
+    private cmpFactoryResolver: ComponentFactoryResolver, private store: Store<fromApp.AppState>){}
 
   ngOnInit(): void {
-    this.authService.userSubject.subscribe( user => {
-      console.log(user);
-    });
+    // this.authService.userSubject.subscribe( user => {
+    //   console.log(user);
+    // });
+    this.store.select('auth').subscribe(authState => {
+      this.isLoading = authState.isLoading;
+      this.error = authState.authError;
+      if(this.error){
+        this.showErrorAlert(this.error);
+      }
+    })
   }
 
   ngOnDestroy() {
@@ -61,22 +72,24 @@ export class AuthComponent implements OnInit, OnDestroy {
     if (!this.isLogInMode) {
       authObservable = this.authService.signUp(mail, pass);
     } else {
-      authObservable = this.authService.signIn(mail, pass);
+      // authObservable = this.authService.signIn(mail, pass);
+      this.store.dispatch(new AuthActions.LoginStart({email: mail, password: pass}))
     }
 
-    authObservable.subscribe(response => {
-      this.isLoading = false;
-      this.router.navigate(['/recipes']);
-    }, error => {
-      this.isLoading = false;
-      // this.error = error;
-      this.showErrorAlert(error);
-    });
+    // authObservable.subscribe(response => {
+    //   this.isLoading = false;
+    //   this.router.navigate(['/recipes']);
+    // }, error => {
+    //   this.isLoading = false;
+    //   // this.error = error;
+    //   this.showErrorAlert(error);
+    // });
 
     this.authForm.reset();
   }
 
   showErrorAlert(error: string): void {
+    console.log('something');
     const alertCmpFactory = this.cmpFactoryResolver.resolveComponentFactory(AlertComponent);
     const hostViewContainerRef = this.alertHost.viewContainerRef;
     hostViewContainerRef.clear();
