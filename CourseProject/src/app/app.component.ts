@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './Auth/auth.service';
+import { Store } from '@ngrx/store';
 import { LoggingService } from './logging.service';
+import * as AuthActions from './Auth/store/auth.actions';
+import * as fromApp from './store/app.reducer';
 
 @Component({
   selector: 'app-root',
@@ -9,10 +11,10 @@ import { LoggingService } from './logging.service';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private authService: AuthService, private logService: LoggingService) {}
+  constructor(private store: Store<fromApp.AppState>, private logService: LoggingService) {}
 
   ngOnInit(): void {
-    this.authService.autoLogIn();
+    this.store.dispatch(new AuthActions.AutoLogin(null));
     this.logService.printLog('Hello from AppComponent!');
   }
 }

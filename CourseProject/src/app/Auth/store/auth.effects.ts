@@ -6,6 +6,7 @@ import { of } from "rxjs";
 import { switchMap, map, tap, catchError } from 'rxjs/operators'
 import { environment } from '../../../environments/environment'
 import * as authActions from '../store/auth.actions';
+import { UserModel } from "../user.model";
 
 export interface AuthResponseData{
   kind: string;
@@ -19,6 +20,8 @@ export interface AuthResponseData{
 
 const handleAuthentication = (expiresIn: number, email: string, localId: string, idToken: string) => {
   const expDate = new Date(new Date().getTime() + (expiresIn * 1000));
+  const user = new UserModel(email, localId, idToken, expDate);
+  localStorage.setItem('userData', JSON.stringify(user));
   return new authActions.AuthSuccess({email: email, userId: localId,
      idToken: idToken, expDate: expDate});
 }
@@ -84,10 +87,45 @@ export class AuthEffects {
     })
   );
 
-    @Effect({dispatch: false})
-    authRedirect = this.actions$.pipe(
-      ofType(authActions.AUTH_SUCCESS, authActions.LOGOUT),
-      tap(userData => {
-      this.router.navigate(['/']);
+  @Effect({dispatch: false})
+  authRedirect = this.actions$.pipe(
+    ofType(authActions.AUTH_SUCCESS, authActions.LOGOUT),
+    tap(userData => {
+    this.router.navigate(['/']);
   }))
+
+  @Effect({dispatch: false})
+  authLogout = this.actions$.pipe(
+    ofType(authActions.LOGOUT),
+    tap(() => {
+      localStorage.removeItem('userData');
+    })
+  )
+
+  @Effect()
+  authAutoLogin = this.actions$.pipe(
+    ofType(authActions.AUTO_LOGIN),
+    map(() => {
+      const userData: {
+        email: string;
+        id: string;
+        _token: string;
+        _tokenExpirationDate: string;
+      } = JSON.parse(localStorage.getItem('userData'));
+
+      if (!userData) {
+        return {type: 'prevent autoLogin error'};
+      }
+
+      const user = new UserModel(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
+
+      if (user.token) {
+        // const expiration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+        // this.autoLogout(expiration);
+        return new authActions.AuthSuccess({email: user.email, userId: user.id, idToken: user.token, expDate: new Date(userData._tokenExpirationDate)});
+      }
+
+      return {type: 'prevent autoLogin error'};
+    })
+  )
 }
