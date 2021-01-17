@@ -27,32 +27,10 @@ export class AuthService {
   userSubject = new BehaviorSubject<UserModel>(null);
   private tokenExpTimer: any;
 
-  constructor(private http: HttpClient, private router: Router, private store: Store<fromApp.AppState>){}
-
-  signIn(email: string, password: string): any {
-    return this.http.post<AuthResponseData>(this.signInUrl, {
-      email: email,
-      password: password,
-      returnSecureToken: true
-    }).pipe(catchError(this.handleError), tap<AuthResponseData>( rData => {
-      this.handleAuthentication(rData.email, rData.localId, rData.idToken, +rData.expiresIn);
-    }));
-  }
-
-  signUp(email: string, password: string): any {
-    return this.http.post<AuthResponseData>(this.signUpUrl, {
-      email: email,
-      password: password,
-      returnSecureToken: true
-    }).pipe(catchError(this.handleError), tap<AuthResponseData>( rData => {
-      this.handleAuthentication(rData.email, rData.localId, rData.idToken, +rData.expiresIn);
-    }));
-  }
+  constructor(private store: Store<fromApp.AppState>){}
 
   logOut(): void {
-    // this.userSubject.next(null);
     this.store.dispatch(new AuthActions.Logout(null));
-    this.router.navigate(['auth']);
     localStorage.removeItem('userData');
     if (this.tokenExpTimer) {
       clearTimeout(this.tokenExpTimer);

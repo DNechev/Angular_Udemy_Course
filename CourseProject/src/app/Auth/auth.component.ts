@@ -24,15 +24,12 @@ export class AuthComponent implements OnInit, OnDestroy {
   });
   @ViewChild(PlaceholderDirective) alertHost: PlaceholderDirective;
   private closeSub: Subscription;
+  private storeSub: Subscription;
 
-  constructor(private authService: AuthService, private router: Router,
-    private cmpFactoryResolver: ComponentFactoryResolver, private store: Store<fromApp.AppState>){}
+  constructor(private cmpFactoryResolver: ComponentFactoryResolver, private store: Store<fromApp.AppState>){}
 
   ngOnInit(): void {
-    // this.authService.userSubject.subscribe( user => {
-    //   console.log(user);
-    // });
-    this.store.select('auth').subscribe(authState => {
+    this.storeSub = this.store.select('auth').subscribe(authState => {
       this.isLoading = authState.isLoading;
       this.error = authState.authError;
       if(this.error){
@@ -45,11 +42,14 @@ export class AuthComponent implements OnInit, OnDestroy {
     if (this.closeSub) {
       this.closeSub.unsubscribe();
     }
-    console.log('sub removed');
+
+    if (this.storeSub) {
+      this.storeSub.unsubscribe();
+    }
   }
 
   onClosedAlert(): void {
-    this.error = null;
+    this.store.dispatch(new AuthActions.ClearError(null));
   }
 
   onSwitchMode(): void {
@@ -65,39 +65,24 @@ export class AuthComponent implements OnInit, OnDestroy {
     const mail = this.authForm.controls.email.value;
     const pass = this.authForm.controls.password.value;
 
-    let authObservable: Observable<AuthResponseData>;
-
-    this.isLoading = true;
-
     if (!this.isLogInMode) {
       this.store.dispatch(new AuthActions.SignupStart({email: mail, password: pass}))
     } else {
-      // authObservable = this.authService.signIn(mail, pass);
       this.store.dispatch(new AuthActions.LoginStart({email: mail, password: pass}))
     }
-
-    // authObservable.subscribe(response => {
-    //   this.isLoading = false;
-    //   this.router.navigate(['/recipes']);
-    // }, error => {
-    //   this.isLoading = false;
-    //   // this.error = error;
-    //   this.showErrorAlert(error);
-    // });
 
     this.authForm.reset();
   }
 
   showErrorAlert(error: string): void {
-    console.log('something');
     const alertCmpFactory = this.cmpFactoryResolver.resolveComponentFactory(AlertComponent);
     const hostViewContainerRef = this.alertHost.viewContainerRef;
     hostViewContainerRef.clear();
     const cmpRef = hostViewContainerRef.createComponent(alertCmpFactory);
     cmpRef.instance.message = error;
     this.closeSub = cmpRef.instance.close.subscribe(() => {
-      this.closeSub.unsubscribe();
       hostViewContainerRef.clear();
+      this.closeSub.unsubscribe();
     });
   }
 }
