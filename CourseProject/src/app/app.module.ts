@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './Header/header.component';
@@ -30,7 +31,8 @@ import { environment } from 'src/environments/environment';
     CoreModule,
     StoreModule.forRoot(fromAppReducer.appReducer),
     EffectsModule.forRoot([AuthEffects]),
-    StoreDevtoolsModule.instrument({logOnly: environment.production})
+    StoreDevtoolsModule.instrument({logOnly: environment.production}),
+    StoreRouterConnectingModule.forRoot()
   ],
   bootstrap: [AppComponent],
 })
