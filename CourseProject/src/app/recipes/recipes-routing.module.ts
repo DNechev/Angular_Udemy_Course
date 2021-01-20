@@ -24,5 +24,4 @@ exports: [
 ]
 })
 export class RecipesRoutingModule {
-
 }
