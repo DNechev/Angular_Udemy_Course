@@ -1,4 +1,4 @@
-import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
+import { animate, group, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { CloneVisitor } from '@angular/compiler/src/i18n/i18n_ast';
 import { Component } from '@angular/core';
 
@@ -92,10 +92,15 @@ import { Component } from '@angular/core';
         ]))
       ]),
       transition('* => void', [
-        animate(300, style({
-          transform: 'translateX(+100px)',
-          opacity: 0
-        }))
+        group([
+          animate(300, style({
+            color: 'red'
+          })),
+          animate(900, style({
+            transform: 'translateX(+100px)',
+            opacity: 0
+          }))
+        ])
       ])
     ])
   ]
