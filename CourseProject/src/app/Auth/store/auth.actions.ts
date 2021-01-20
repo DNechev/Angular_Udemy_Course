@@ -13,7 +13,7 @@ export const LOGOUT = '[Auth] Logout';
 export class AuthSuccess implements Action{
   readonly type: string = AUTH_SUCCESS;
 
-  constructor(public payload: {email: string, userId: string, idToken: string, expDate: Date}){
+  constructor(public payload: {email: string, userId: string, idToken: string, expDate: Date, redirect: boolean}){
   }
 }
 

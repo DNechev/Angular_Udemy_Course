@@ -24,7 +24,6 @@ export class DataStorageService {
     return this.store.select('auth').pipe(take(1),
     map(storeData => storeData.user),
     exhaustMap(user => {
-      console.log(user.token);
       return this.http.get<Recipe[]>('https://angular-udemy-recipes-project-default-rtdb.firebaseio.com/recipes.json');
     }),
     map( recipes => {
@@ -33,7 +32,6 @@ export class DataStorageService {
       });
     }),
     tap( recipes => {
-      console.log('dispatching');
       this.store.dispatch(new RecipeActions.SetRecipes(recipes));
     }));
   }

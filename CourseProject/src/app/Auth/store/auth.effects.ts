@@ -24,7 +24,7 @@ const handleAuthentication = (expiresIn: number, email: string, localId: string,
   const user = new UserModel(email, localId, idToken, expDate);
   localStorage.setItem('userData', JSON.stringify(user));
   return new authActions.AuthSuccess({email: email, userId: localId,
-     idToken: idToken, expDate: expDate});
+     idToken: idToken, expDate: expDate, redirect: true});
 }
 
 const handleError = (errorRes) => {
@@ -93,8 +93,10 @@ export class AuthEffects {
   @Effect({dispatch: false})
   authRedirect = this.actions$.pipe(
     ofType(authActions.AUTH_SUCCESS),
-    tap(userData => {
-    this.router.navigate(['/']);
+    tap((userData: authActions.AuthSuccess) => {
+    if(userData.payload.redirect){
+      this.router.navigate(['/']);
+    }
   }))
 
   @Effect({dispatch: false})
@@ -127,7 +129,7 @@ export class AuthEffects {
       if (user.token) {
         const expiration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
         this.authService.setLogoutTimer(expiration);
-        return new authActions.AuthSuccess({email: user.email, userId: user.id, idToken: user.token, expDate: new Date(userData._tokenExpirationDate)});
+        return new authActions.AuthSuccess({email: user.email, userId: user.id, idToken: user.token, expDate: new Date(userData._tokenExpirationDate), redirect: false});
       }
 
       return {type: 'prevent autoLogin error'};
